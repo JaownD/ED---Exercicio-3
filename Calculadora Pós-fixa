@@ -1,0 +1,124 @@
+#include <stdio.h>
+
+///Tipo Abstrato de Dados (TAD) - Pilha
+/*
+
+    1º - Ler do usuario uma string (colocar no vetor)
+    2º - Enquanto (vetor[i] != '\0') as operações e o push funcionaram
+            -> Se for '+' ou '*' chama a função operação
+            -> Se não, converte o char vetor para int (x = x-'0') e chama a função push
+    3º - Em caso de ser '+' ou '*', realiza a operação com o topo e o elemento anterior ao topo(ant_topo)
+    4º - Coloca-se o resultado da operação na posição ant_topo (ant_topo = operação);
+    5º - Quando chegar em '\0', a função pop deve ser chamada e imprimir o valor o resultado da expressao pós-fixa
+
+    Funções necessarias:
+        -> Cria_pilha()
+        -> Operacoes(Pilha *p, char x)
+        -> Push(Pilha *p, char x);
+        -> Pop(Pilha *p);
+
+
+*/
+
+typedef struct Pilha{
+    int vetor[100];
+    int topo;
+}Pilha;
+
+
+Pilha *cria_pilha(){
+    Pilha *p = (Pilha*)malloc(sizeof(Pilha));
+    p->topo = -1;
+
+    return p;
+}
+
+/* 
+    Disponibiliza o valor anterior ao topo para a /Função Operaçoes/, e quando não há mais elemntos a serem
+    calculados, retorna o resultado final
+  */
+int pop(Pilha *p){
+    int anterior_topo = 0, resultado = 0;
+
+    p->topo--;
+
+    if(p->topo == -1){
+        p->topo++;
+        resultado = p->vetor[p->topo];
+        free(p);
+        return resultado;
+    }
+    else{
+        anterior_topo = p->vetor[p->topo];
+        p->topo++;
+        return anterior_topo;
+    }
+
+}
+
+//Calcula os dois ultimos valores adiconados na pilha, multiplicando ou somando-os
+int operacoes(Pilha *p, char aux){
+     int resultado, anterior;
+
+     anterior = pop(p);
+
+     switch(aux){
+        case '+':
+            resultado = anterior + p->vetor[p->topo];
+            break;
+
+        case '*':
+            resultado = anterior * p->vetor[p->topo];
+            break;
+     }
+    return resultado;
+}
+
+
+/*
+Pega cada caracter da string armagenada em aux e verifica se é caracter de '+' ou '*', se nn for transforma
+em numero decimal (valor = aux[i]-'0') e armazena na pilha
+*/
+
+void push(Pilha *p, char aux){
+    int i = 0, valor = 0, anterior = 0, resultado = 0;
+
+
+    if(aux == '*' || aux == '+'){
+        resultado = operacoes(p, aux);
+        p->topo--;
+        p->vetor[p->topo] = resultado;
+   }
+    else{
+        if(p->topo == -1){
+            valor = aux-'0';
+            p->topo++;
+            p->vetor[p->topo] = valor;
+        }
+
+        else{
+            valor = aux-'0';
+            p->topo++;
+            p->vetor[p->topo] = valor;
+        }
+}}
+
+
+int main(){
+    Pilha *p = cria_pilha();
+    char aux[100];
+    int i = 0, resultado_final = 0;
+
+    printf("Ola, por favor digite uma expressao pos-fixa a ser calculada: ");
+    scanf("%s", aux);
+
+    while(aux[i] != '\0'){
+        push(p, aux[i]);
+        i++;
+    }
+
+    resultado_final = pop(p);
+    printf("\nResutado: %d\n", resultado_final);
+
+    return 0;
+}
